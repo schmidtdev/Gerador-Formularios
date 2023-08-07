@@ -186,6 +186,8 @@
         draggable=".draggable"
         class="full-width q-pa-md"
         id="formPreview"
+        @start="dragging = true"
+        @end="dragging = false"
       >
         <div class="row q-mb-lg">
           <span class="col-6 text-center text-bold text-primary">
@@ -200,9 +202,9 @@
           <div
             class="row col-12 items-center justify-evenly q-my-sm draggable"
             v-for="entry in form"
-            :key="entry.order"
+            :key="entry.id"
           >
-            <div style="cursor: grab;" class="row col-12 items-center justify-evenly q-my-sm non-selectable">
+            <div style="cursor: grab;" v-if="entry" class="row col-12 items-center justify-evenly q-my-sm non-selectable">
               <span class="col-6 text-bold">
                 {{ entry.question }}
               </span>
@@ -263,7 +265,7 @@ export default defineComponent({
   methods: {
     exportPreview () {
       html2pdf(document.getElementById('formPreview'), {
-        margin: 1,
+        margin: 2,
         filename: `${this.formCode}-${this.formName}.pdf`
       })
     },
@@ -275,13 +277,7 @@ export default defineComponent({
     },
 
     onMove (ev) {
-      const index = this.form.findIndex(el => el === undefined)
-
-      if (index !== -1) {
-        this.form.splice(index, 1)
-      }
-      this.form = ev.relatedContext.list
-      this.form.forEach((item, index) => (item.order = index))
+      console.log(ev.relatedContext.list)
     },
 
     addInput (type) {
@@ -297,7 +293,7 @@ export default defineComponent({
             input: 'text',
             question: this.text.question,
             type: this.text.type,
-            order: this.form.length + 1
+            order: id
           })
           this.text.question = null
           break
@@ -311,7 +307,7 @@ export default defineComponent({
             input: 'selection',
             question: this.selection.question,
             options: this.selection.options,
-            order: this.form.length + 1
+            order: id
           })
           this.selection.question = null
           this.selection.options = []
@@ -331,7 +327,7 @@ export default defineComponent({
                 value: opt
               }
             }),
-            order: this.form.length + 1
+            order: id
           })
           this.checkboxes.question = null
           this.checkboxes.options = []
@@ -351,7 +347,7 @@ export default defineComponent({
                 value: opt
               }
             }),
-            order: this.form.length + 1
+            order: id
           })
           this.radio.question = null
           this.radio.options = []
