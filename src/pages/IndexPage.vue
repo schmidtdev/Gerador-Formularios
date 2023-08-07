@@ -17,6 +17,18 @@
             @click="exportPreview"
           />
         </q-card-actions>
+        <q-card-actions class="q-gutter-sm">
+          <q-select
+            v-model="pdfOrientation"
+            :options="pdfOptions"
+            label="Orientação da preview"
+            outlined
+            dense
+            map-options
+            emit-value
+            class="full-width q-mb-sm"
+          />
+        </q-card-actions>
         <q-list class="rounded-borders">
           <q-input
             v-model="formName"
@@ -179,28 +191,22 @@
 
     <q-separator spaced inset vertical />
 
-    <q-card class="flex col-8" flat>
+    <q-card class="column col-8" flat id="formPreview">
+      <div class="row q-mb-lg q-pa-md full-width">
+        <span class="col-6 text-center text-bold text-primary">
+          Formulário: {{ formName }}
+        </span>
+        <span class="col-6 text-center text-bold text-primary">
+          ID: {{ formCode }}
+        </span>
+      </div>
       <draggable
         v-model="form"
-        :move="onMove"
-        draggable=".draggable"
-        class="full-width q-pa-md"
-        id="formPreview"
-        @start="dragging = true"
-        @end="dragging = false"
+        class="col-10 q-pa-md"
       >
-        <div class="row q-mb-lg">
-          <span class="col-6 text-center text-bold text-primary">
-            Formulário: {{ formName }}
-          </span>
-          <span class="col-6 text-center text-bold text-primary">
-            ID: {{ formCode }}
-          </span>
-        </div>
-
         <transition-group type="transition" name="flip-list">
           <div
-            class="row col-12 items-center justify-evenly q-my-sm draggable"
+            class="row col-12 items-center justify-evenly q-my-sm"
             v-for="entry in form"
             :key="entry.id"
           >
@@ -264,10 +270,15 @@ export default defineComponent({
 
   methods: {
     exportPreview () {
-      html2pdf(document.getElementById('formPreview'), {
-        margin: 2,
-        filename: `${this.formCode}-${this.formName}.pdf`
-      })
+      const opt = {
+        margin: 1,
+        filename: `${this.formCode}-${this.formName}.pdf`,
+        image: { type: 'jpeg', quality: 1 },
+        jsPDF: {
+          orientation: this.pdfOrientation ? this.pdfOrientation : 'p'
+        }
+      }
+      html2pdf().set(opt).from(document.getElementById('formPreview')).save()
     },
 
     clearForm () {
@@ -371,6 +382,18 @@ export default defineComponent({
       formName: null,
       formCode: null,
       form: [],
+
+      pdfOrientation: null,
+      pdfOptions: [
+        {
+          label: 'Retrato',
+          value: 'p'
+        },
+        {
+          label: 'Paisagem',
+          value: 'l'
+        }
+      ],
 
       text: {
         question: null,
