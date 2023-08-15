@@ -3,7 +3,10 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') }
+      { path: '', component: () => import('pages/IndexPage.vue') },
+      { path: 'autorizar', component: () => import('pages/AllForms.vue') },
+      { path: 'formularios', component: () => import('pages/IndexPage.vue') },
+      { path: 'parametros', component: () => import('pages/ParametrosAnalise.vue') }
     ]
   },
 

@@ -24,7 +24,7 @@ module.exports = configure(function (ctx) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-webpack/boot-files
     boot: [
-
+      'toast'
     ],
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-css
@@ -52,6 +52,12 @@ module.exports = configure(function (ctx) {
 
       // transpile: false,
       // publicPath: '/',
+
+      env: {
+        API: ctx.dev ? 'http://localhost:3000'
+          : process.env.STAGING === 'TRUE' ? 'https://staging.webgrapp.com.br'
+            : 'https://api.webgrapp.com.br'
+      },
 
       // Add dependencies for transpiling with Babel (Array of string/regex)
       // (from node_modules, which are by default not transpiled).
@@ -88,10 +94,20 @@ module.exports = configure(function (ctx) {
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-framework
     framework: {
-      config: {},
+      config: {
+        loading: {
+          message: 'Por favor aguarde, estamos processando sua requisição...',
+          spinnerSize: '200px',
+          spinnerColor: 'white',
+          messageColor: 'white',
+          backgroundColor: 'primary',
+          spinner: 'QSpinnerPie',
+          customClass: 'text-h6 dimmed'
+        }
+      },
 
       // iconSet: 'material-icons', // Quasar icon set
-      // lang: 'en-US', // Quasar language pack
+      lang: 'pt-BR', // Quasar language pack
 
       // For special cases outside of where the auto-import strategy can have an impact
       // (like functional components as one of the examples),
@@ -101,7 +117,10 @@ module.exports = configure(function (ctx) {
       // directives: [],
 
       // Quasar plugins
-      plugins: []
+      plugins: [
+        'Loading',
+        'LocalStorage'
+      ]
     },
 
     // animations: 'all', // --- includes all animations
